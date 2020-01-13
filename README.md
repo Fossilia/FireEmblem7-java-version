@@ -1,2 +1,5 @@
 # FireEmblem7-java-version
- Grade 12 java project, a java version of Fire Emblem 7 with different maps.
+  Java version of Fire Emblem 7 with custom maps.
+
+# Releases
+  Download from the [Release Page](https://github.com/Fossilia/FireEmblem7-java-version/releases)
