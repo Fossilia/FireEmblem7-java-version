@@ -2,11 +2,11 @@
   Java version of Fire Emblem 7 with custom maps.
 
 ## Screenshots
-  Battle screenshot:
+  Battle phase:
   
   ![Battle Screenshot](screenshots/battle_screenShot.jpeg)
   
-  Overworld screenshot:
+  Overworld:
   
   ![Overworld Screenshot](screenshots/overworld_screenshot.jpeg)
 
