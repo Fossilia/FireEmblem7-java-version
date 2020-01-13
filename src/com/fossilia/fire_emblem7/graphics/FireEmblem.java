@@ -24,6 +24,9 @@ public class FireEmblem extends JFrame implements ActionListener, Global {
 
         myTimer = new Timer(10, this);  // trigger every 10 ms
 
+        ImageIcon img = new ImageIcon("images/icon.jpg");
+        setIconImage(img.getImage());
+
         game = new GamePanel(this);
         add(game);
 

@@ -1520,6 +1520,7 @@ class GamePanel extends JPanel implements KeyListener, Global {
 
       if(mode.equals("menu")){
         menuImage = loadImage("images/Menu/Main Menu.png");
+
         g.drawImage(menuImage,0,0,this);
         g.drawString("Chapter 1", 95*3, 58*3);
         g.drawString("Chapter 2", 95*3, 83*3);
