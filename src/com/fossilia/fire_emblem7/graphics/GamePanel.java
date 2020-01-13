@@ -1,3 +1,5 @@
+package com.fossilia.fire_emblem7.graphics;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -9,10 +11,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.*;
 import java.io.*;
 import java.awt.Font;
+
+import com.fossilia.fire_emblem7.Global;
+import com.fossilia.fire_emblem7.unit.Unit;
 import sun.audio.*;
 
-class GamePanel extends JPanel implements KeyListener{
-  private String mode = "title";
+class GamePanel extends JPanel implements KeyListener, Global {
+    private String mode = "title";
     private int x,y;
     private int gridX, gridY;
     private Unit selectedUnit = null;
@@ -85,7 +90,7 @@ class GamePanel extends JPanel implements KeyListener{
             img = ImageIO.read(new File(path));
         }
         catch (IOException e) {
-            System.out.println("Did you misplace "+path+"?");
+            if(DEBUG) System.out.println("Did you misplace "+path+"?");
             return null;
         }
 
@@ -173,7 +178,7 @@ class GamePanel extends JPanel implements KeyListener{
 
     public void loadMap(){ //loads images and units for map1
 
-     if(mode == "map1"){
+     if(mode.equals("map1")){
         terrainMap = new int [][] //used to check for terrain
        {{5,0,5,5,5,1,0,3,3,3,0,2,4,4,4},
         {5,0,5,5,5,0,0,0,0,0,0,2,0,0,4},
@@ -197,11 +202,15 @@ class GamePanel extends JPanel implements KeyListener{
         //enemyunits
         Unit brigand1 = new Unit("Brigand", 8, 8, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
         Unit brigand2 = new Unit("Brigand", 13, 3, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
-        Unit brigand3 = new Unit("Brigand", 13, 5, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
+        Unit brigand3 = new Unit("Brigand", 7, 2, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
+        //Unit brigand4 = new Unit("Brigand", 13, 5, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
+        //Unit brigand5 = new Unit("Brigand", 9, 5, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
         Unit bossBrigand = new Unit("Brigand", 14, 4, "Brigand", "Iron Axe", new int[] {15,12,10,10,10,10,10,10,3}, true, "enemy");
         enemyUnits.add(brigand1);
         enemyUnits.add(brigand2);
         enemyUnits.add(brigand3);
+         //enemyUnits.add(brigand4);
+         //enemyUnits.add(brigand5);
         enemyUnits.add(bossBrigand);
 
 
@@ -374,10 +383,10 @@ class GamePanel extends JPanel implements KeyListener{
         spriteList = new ArrayList<Image>();
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        System.out.println(turn+" turn");
+        if(DEBUG) System.out.println(turn+" turn");
      }
 
-        if(mode == "map2"){
+        if(mode.equals("map2")){
         terrainMap = new int [][]
        {{0,0,1,1,0,0,0,0,3,3,3,5,0,5,0},
         {0,0,0,0,0,1,0,1,3,3,1,0,0,0,0},
@@ -403,7 +412,7 @@ class GamePanel extends JPanel implements KeyListener{
         Unit brigand2 = new Unit("Brigand", 13, 3, "Brigand", "Iron Axe", new int[] {10,10,10,10,10,10,10,10,3}, false, "enemy");
         Unit soldier1 = new Unit("Soldier", 13, 5, "Brigand", "Iron Axe", new int[] {10,11,10,10,10,10,13,10,3}, false, "enemy");
         Unit soldier2 = new Unit("Soldier", 13, 1, "Brigand", "Iron Axe", new int[] {10,11,10,10,10,10,13,10,3}, false, "enemy");
-        Unit bossSoldier = new Unit("Soldier", 13, 0, "Brigand", "Iron Spear", new int[] {20,10,10,10,10,10,13,10,3}, true, "enemy");
+        Unit bossSoldier = new Unit("Soldier", 13, 0, "Brigand", "Iron Axe", new int[] {20,10,10,10,10,10,13,10,3}, true, "enemy");
         enemyUnits.add(brigand1);
         enemyUnits.add(brigand2);
         enemyUnits.add(soldier1);
@@ -630,7 +639,7 @@ class GamePanel extends JPanel implements KeyListener{
         spriteList = new ArrayList<Image>();
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        System.out.println(turn+" turn");
+        if(DEBUG) System.out.println(turn+" turn");
 
     }
 
@@ -707,66 +716,50 @@ class GamePanel extends JPanel implements KeyListener{
 
     public void drawBattle(Graphics g){ //draws everything that happens in battle
         if(battleTimer.isRunning()){
+
             g.drawImage(battleBackground,0,0,this);
             g.drawImage(battlePlatform,0,0,this);
             //g.drawImage(pic , x + width, y, -width, height, null);
             g.drawImage(battlePlatform, battlePlatform.getWidth(null),0, -battlePlatform.getWidth(null), battlePlatform.getHeight(null), this);
             g.drawImage(battleUI,0,0,this);
 
+            Font newFont = g.getFont().deriveFont(Font.BOLD, 24f);
+            g.setFont(newFont);
+            g.setColor(Color.black);
+
+            //drawing unit names
+            g.drawString(attacking.getName(), 202*3, 20*3);
+            g.drawString(defending.getName(), 18*3, 20*3);
+
+            //drawing weapon triangle arrows
+            if(attacking.getAttackerWepTri(defending) == 1){
+                g.drawImage(arrowUpPics.get(arrowCounter), 123*3, 121*3,this);
+            }
+            if(attacking.getAttackerWepTri(defending) == -1){
+                g.drawImage(arrowDownPics.get(arrowCounter), 123*3, 121*3,this);
+            }
+            if(defending.getAttackerWepTri(attacking) == 1){
+                g.drawImage(arrowUpPics.get(arrowCounter), 44*3, 121*3,this);
+            }
+            if(defending.getAttackerWepTri(attacking) == -1){
+                g.drawImage(arrowDownPics.get(arrowCounter), 44*3, 121*3,this);
+            }
+
+            //drawing stats
+            g.drawString(""+attacking.getAttackerHit(defending), 25*3, 119*3);
+            g.drawString(""+attacking.getAttackerAtk(defending), 25*3, 127*3);
+            g.drawString(""+attacking.getAttackerCrt(defending), 25*3, 135*3);
+
+            g.drawString(""+defending.getAttackerHit(attacking), 225*3, 119*3);
+            g.drawString(""+defending.getAttackerAtk(attacking), 225*3, 127*3);
+            g.drawString(""+defending.getAttackerCrt(attacking), 225*3, 135*3);
+
             if(playerUnits.contains(attacking) && expCounter == 0){
                 if(defending.getCurHP()>0){
                     g.drawImage(defending.getIdleBattleSprite(), defending.getIdleBattleSprite().getWidth(null),0, -defending.getIdleBattleSprite().getWidth(null), defending.getIdleBattleSprite().getHeight(null), this);
                 }
 
-                attacking.getCurHP();
-                defending.getCurHP();
-                attacking.getAttackerWepTri(defending);
-                defending.getAttackerWepTri(attacking);
-                attacking.getAttackerHit(defending);
-                defending.getAttackerHit(attacking);
-                attacking.getAttackerAtk(defending);
-                defending.getAttackerAtk(attacking);
-                attacking.getAttackerCrt(defending);
-                defending.getAttackerCrt(attacking);
-
-                Font newFont = g.getFont().deriveFont(Font.BOLD, 24f);
-                g.setFont(newFont);
-                g.setColor(Color.black);
-
-                g.drawString(attacking.getName(), 202*3, 25*3);
-                g.drawString(defending.getName(), 18*3, 25*3);
-
-
-
-
-                //g.drawString(""+attacking.updateAtk(), 128*3, 122*3);
-                //g.drawString(attacking.getName(), 18*3, 112*3);
-                if(attacking.getAttackerWepTri(defending) == 1){
-                        g.drawImage(arrowUpPics.get(arrowCounter), 123*3, 121*3,this);
-                }
-                if(attacking.getAttackerWepTri(defending) == -1){
-                        g.drawImage(arrowDownPics.get(arrowCounter), 123*3, 121*3,this);
-                }
-                if(defending.getAttackerWepTri(attacking) == 1){
-                        g.drawImage(arrowUpPics.get(arrowCounter), 44*3, 121*3,this);
-                }
-                if(defending.getAttackerWepTri(attacking) == -1){
-                        g.drawImage(arrowDownPics.get(arrowCounter), 44*3, 121*3,this);
-                }
-
-                //g.drawString(""+attacking.getAttackerWepTri(defending), 232*3, 112*3);
-                g.drawString(""+attacking.getAttackerHit(defending), 225*3, 119*3);
-                g.drawString(""+attacking.getAttackerAtk(defending), 225*3, 127*3);
-                g.drawString(""+attacking.getAttackerCrt(defending), 225*3, 135*3);
-
-                g.drawString(""+defending.getAttackerHit(attacking), 25*3, 119*3);
-                g.drawString(""+defending.getAttackerAtk(attacking), 25*3, 127*3);
-                g.drawString(""+defending.getAttackerCrt(attacking), 25*3, 135*3);
-                //g.drawString(attacking.getAttackerWepTri(defending), 18*3, 112*3);
-                //g.drawString(defending.getName(), 202*3, 10*3);
-
-
-
+                attackSequence(g, attacking, defending);
 
                 g.drawImage(attacking.getAttackSprites().get(battleAniCounter),0,0,this);
                 g.setColor(Color.black);
@@ -783,49 +776,7 @@ class GamePanel extends JPanel implements KeyListener{
                     g.drawImage(defending.getIdleBattleSprite(),0,0,this);
                 }
 
-                attacking.getCurHP();
-                defending.getCurHP();
-                attacking.getAttackerWepTri(defending);
-                defending.getAttackerWepTri(attacking);
-                attacking.getAttackerHit(defending);
-                defending.getAttackerHit(attacking);
-                attacking.getAttackerAtk(defending);
-                defending.getAttackerAtk(attacking);
-                attacking.getAttackerCrt(defending);
-                defending.getAttackerCrt(attacking);
-
-                Font newFont = g.getFont().deriveFont(Font.BOLD, 24f);
-                g.setFont(newFont);
-                g.setColor(Color.black);
-
-                g.drawString(defending.getName(), 202*3, 25*3);
-                g.drawString(attacking.getName(), 18*3, 25*3);
-
-
-
-
-                if(attacking.getAttackerWepTri(defending) == 1){
-                        g.drawImage(arrowUpPics.get(arrowCounter), 44*3, 121*3,this);
-                }
-                if(attacking.getAttackerWepTri(defending) == -1){
-                        g.drawImage(arrowDownPics.get(arrowCounter), 44*3, 121*3,this);
-                }
-                if(defending.getAttackerWepTri(attacking) == 1){
-                        g.drawImage(arrowUpPics.get(arrowCounter), 44*3, 121*3,this);
-                }
-                if(defending.getAttackerWepTri(attacking) == -1){
-                        g.drawImage(arrowDownPics.get(arrowCounter), 44*3, 121*3,this);
-                }
-
-                g.drawString(""+attacking.getAttackerHit(defending), 25*3, 119*3);
-                g.drawString(""+attacking.getAttackerAtk(defending), 25*3, 127*3);
-                g.drawString(""+attacking.getAttackerCrt(defending), 25*3, 135*3);
-
-                g.drawString(""+defending.getAttackerHit(attacking), 225*3, 119*3);
-                g.drawString(""+defending.getAttackerAtk(attacking), 225*3, 127*3);
-                g.drawString(""+defending.getAttackerCrt(attacking), 225*3, 135*3);
-
-
+                attackSequence(g, defending, attacking);
 
                 g.drawImage(attacking.getAttackSprites().get(battleAniCounter), attacking.getAttackSprites().get(battleAniCounter).getWidth(null), 0, -attacking.getAttackSprites().get(battleAniCounter).getWidth(null), attacking.getAttackSprites().get(battleAniCounter).getHeight(null), this);
                 g.setColor(Color.black);
@@ -839,11 +790,6 @@ class GamePanel extends JPanel implements KeyListener{
             }
             else if(expCounter>0){
                 if(playerUnits.contains(attacking)){
-                    Font newFont = g.getFont().deriveFont(24f);
-                    g.setFont(newFont);
-                    g.setColor(Color.white);
-                    g.drawString(attacking.getName(), 500, 100);
-                    g.drawString(defending.getName(), 100, 100);
                     if(defending.getCurHP()>0){
                         g.drawImage(defending.getIdleBattleSprite(), defending.getIdleBattleSprite().getWidth(null),0, -defending.getIdleBattleSprite().getWidth(null), defending.getIdleBattleSprite().getHeight(null), this);
                     }
@@ -859,11 +805,6 @@ class GamePanel extends JPanel implements KeyListener{
                     g.fillRect(100,440, defending.getCurHP()*5,20); //enemy health bar
                 }
                 else{
-                    Font newFont = g.getFont().deriveFont(24f);
-                    g.setFont(newFont);
-                    g.setColor(Color.white);
-                    g.drawString(attacking.getName(), 100, 100);
-                    g.drawString(defending.getName(), 500, 100);
                     if(attacking.getCurHP()>0){
                         g.drawImage(attacking.getIdleBattleSprite(), attacking.getIdleBattleSprite().getWidth(null),0, -attacking.getIdleBattleSprite().getWidth(null), attacking.getIdleBattleSprite().getHeight(null), this);
                     }
@@ -881,6 +822,25 @@ class GamePanel extends JPanel implements KeyListener{
         }
     }
 
+    private void attackSequence(Graphics g, Unit attacking, Unit defending) {
+        attacking.getCurHP();
+        defending.getCurHP();
+        attacking.getAttackerWepTri(defending);
+        defending.getAttackerWepTri(attacking);
+        attacking.getAttackerHit(defending);
+        defending.getAttackerHit(attacking);
+        attacking.getAttackerAtk(defending);
+        defending.getAttackerAtk(attacking);
+        attacking.getAttackerCrt(defending);
+        defending.getAttackerCrt(attacking);
+
+        Font newFont = g.getFont().deriveFont(Font.BOLD, 24f);
+        g.setFont(newFont);
+        g.setColor(Color.black);
+
+        //g.drawString(attacking.getName(), 202*3, 20*3);
+        //g.drawString(defending.getName(), 18*3, 20*3);
+    }
 
 
     public int [][] emptymap(){
@@ -997,7 +957,7 @@ class GamePanel extends JPanel implements KeyListener{
                         else{
                             enemyCounter=-1;
                             turn = "player";
-                            System.out.println(turn+" turn");
+                            if(DEBUG) System.out.println(turn+" turn");
                             for(Unit pUnit:playerUnits){
                                 pUnit.setActive(true);
                             }
@@ -1040,13 +1000,13 @@ class GamePanel extends JPanel implements KeyListener{
     public void checkForEnemyTurn(){ //checks if it should be enemies turn
         turn = "enemy";
         for(Unit unit : playerUnits){ //checking if any units are active
-            //System.out.println(unit.getActive());
+            //if(DEBUG) System.out.println(unit.getActive());
             if(unit.getActive()){
                 turn = "player";
             }
         }
         if(turn.equals("enemy")){
-            System.out.println(turn+" turn");
+            if(DEBUG) System.out.println(turn+" turn");
             turnChange = true;
 
         }
@@ -1064,7 +1024,7 @@ class GamePanel extends JPanel implements KeyListener{
                 else{
                     enemyCounter=-1;
                     turn = "player";
-                    System.out.println(turn+" turn");
+                    if(DEBUG) System.out.println(turn+" turn");
                     for(Unit pUnit:playerUnits){
                         pUnit.setActive(true);
                     }
@@ -1073,7 +1033,9 @@ class GamePanel extends JPanel implements KeyListener{
             }
         }
     }
-
+    
+    
+    
     private boolean stopMode = false;
     private boolean attackMode = false;
     private Point.Double gridPoint = null;
@@ -1091,11 +1053,11 @@ class GamePanel extends JPanel implements KeyListener{
         if(mode == "menu"){
           if(keys[KeyEvent.VK_DOWN] && btnPos < 3){
             btnPos += 1;
-            System.out.println(btnPos);
+            if(DEBUG) System.out.println(btnPos);
           }
           else if(keys[KeyEvent.VK_UP] && btnPos > 1){
             btnPos -= 1;
-            System.out.println(btnPos);
+            if(DEBUG) System.out.println(btnPos);
           }
 
           if(keys[KeyEvent.VK_SPACE] && btnPos == 1){
@@ -1124,25 +1086,25 @@ class GamePanel extends JPanel implements KeyListener{
                 if(keys[KeyEvent.VK_Z] && !battleTimer.isRunning() && !unitMover.isRunning()){
                     //battleMode = true;
                     if(playerUnitAtPoint(gridX, gridY)!=null){
-                        System.out.println(playerUnitAtPoint(gridX, gridY).getStatus());
+                        if(DEBUG) System.out.println(playerUnitAtPoint(gridX, gridY).getStatus());
                     }
                     //picking a active unit to move
                     if(playerUnitAtPoint(gridX, gridY)!=null && playerUnitAtPoint(gridX, gridY).getActive() && selectedUnit == null){
                         selectedUnit = playerUnitAtPoint(gridX, gridY);
                         selectedUnit.setSelected(true);
-                        System.out.println(selectedUnit.getName());
+                        if(DEBUG) System.out.println(selectedUnit.getName());
                         oldX = gridX;
                         oldY = gridY;
                         possiblePath(oldX, oldY, selectedUnit);
                         path(oldX, oldY, gridX, gridY, selectedUnit);
-                        System.out.println(selectedUnit.getStatus());
+                        if(DEBUG) System.out.println(selectedUnit.getStatus());
                         //showMap(possibleMap);
                         //showMap(pathmap);
                     }
 
 
                     //selecting where the player unit goes
-                    else if(selectedUnit!=null && playerUnitAtPoint(gridX, gridY) == null && pathmap[gridY][gridX] == 3){
+                    else if(selectedUnit!=null && (playerUnitAtPoint(gridX, gridY) == null || selectedUnit.equals(playerUnitAtPoint(gridX, gridY))) && pathmap[gridY][gridX] == 3){
                         pushUnitTo(selectedUnit, gridX, gridY);
                         turn = "enemy";
                         for(Unit unit : playerUnits){
@@ -1150,7 +1112,7 @@ class GamePanel extends JPanel implements KeyListener{
                                 turn = "player";
                             }
                         }
-                        System.out.println("Press Z to attack or X to wait");
+                        if(DEBUG) System.out.println("Press Z to attack or X to wait");
                         stopMode = true;
                         //selectedUnit.setSelected(false);
                         //selectedUnit = null;
@@ -1160,11 +1122,11 @@ class GamePanel extends JPanel implements KeyListener{
 
             if(keys[KeyEvent.VK_Z] && attackMode && selectedUnit!=null && stopMode){ //attacking a enemy unit
 				selectedUnit.setActive(false);
-                System.out.println("ff");
-                System.out.println(attackPoints);
-                System.out.println(gridPoint);
+                if(DEBUG) System.out.println("ff");
+                if(DEBUG) System.out.println(attackPoints);
+                if(DEBUG) System.out.println(gridPoint);
                 if(attackPoints.contains(gridPoint) && enemyUnitAtPoint(gridX, gridY)!=null){
-                    System.out.println("fight");
+                    if(DEBUG) System.out.println("fight");
                     attacking = selectedUnit;
                     defending = enemyUnitAtPoint(gridX, gridY);
                     battleTimer.start();
@@ -1175,7 +1137,7 @@ class GamePanel extends JPanel implements KeyListener{
                 }
             }
 
-            if(keys[KeyEvent.VK_Z] && stopMode && !unitMover.isRunning()){ //confirms attackinging in the menu and generates all the points where the unit can attack
+            if(keys[KeyEvent.VK_Z] && stopMode && !unitMover.isRunning()){ //confirms attacking in the menu and generates all the points where the unit can attack
                 attackMode = true;
                 attackPoints = new ArrayList<Point2D.Double>();
                 if(selectedUnit.getAttackRange() == 1){
@@ -1226,20 +1188,20 @@ class GamePanel extends JPanel implements KeyListener{
                 //checkForEnemyTurn();
                 turn = "enemy";
                 for(Unit unit : playerUnits){ //checking if any units are active
-                    //System.out.println(unit.getActive());
+                    //if(DEBUG) System.out.println(unit.getActive());
                     if(unit.getActive()){
                         turn = "player";
                     }
                 }
                 if(turn.equals("enemy")){
-                    System.out.println(turn+" turn");
+                    if(DEBUG) System.out.println(turn+" turn");
                     turnChange = true;
 
                 }
 
                 if(turn.equals("enemy")){
                     enemyCounter+=1;
-                    System.out.println(enemyCounter);
+                    if(DEBUG) System.out.println(enemyCounter);
                     if(defending != null){ //if some1 was targeted
                         //battleMode = true;
                         battleTimer.start();
@@ -1251,7 +1213,7 @@ class GamePanel extends JPanel implements KeyListener{
                         else{
                             enemyCounter=-1;
                             turn = "player";
-                            System.out.println(turn+" turn");
+                            if(DEBUG) System.out.println(turn+" turn");
                             for(Unit pUnit:playerUnits){
                                 pUnit.setActive(true);
                             }
@@ -1266,28 +1228,28 @@ class GamePanel extends JPanel implements KeyListener{
                 attackMode = false;
             }
 
-            if(keys[KeyEvent.VK_RIGHT] && (gridX+1)!=15 && mode == "map1" || keys[KeyEvent.VK_RIGHT] && (gridX+1)!=15 && mode == "map2"){ //used to move cursor
+            if(keys[KeyEvent.VK_RIGHT] && (gridX+1)!=15 && mode.equals("map1") || keys[KeyEvent.VK_RIGHT] && (gridX+1)!=15 && mode.equals("map2")){ //used to move cursor
                 x += 16*3;
                 gridX +=1;
                 if(selectedUnit!=null){ //display path made by moving cursor
                     path(oldX, oldY, gridX, gridY, selectedUnit);
                 }
             }
-            if(keys[KeyEvent.VK_LEFT] && (gridX-1)!=-1 && mode == "map1" ||keys[KeyEvent.VK_LEFT] && (gridX-1)!=-1 && mode == "map2"){
+            if(keys[KeyEvent.VK_LEFT] && (gridX-1)!=-1 && mode.equals("map1") ||keys[KeyEvent.VK_LEFT] && (gridX-1)!=-1 && mode.equals("map2")){
                 x -= 16*3;
                 gridX -=1;
                 if(selectedUnit!=null){
                     path(oldX, oldY, gridX, gridY, selectedUnit);
                 }
             }
-            if(keys[KeyEvent.VK_UP] && (gridY-1)!=-1 && mode == "map1" ||keys[KeyEvent.VK_UP] && (gridY-1)!=-1 && mode == "map2"){
+            if(keys[KeyEvent.VK_UP] && (gridY-1)!=-1 && mode.equals("map1") ||keys[KeyEvent.VK_UP] && (gridY-1)!=-1 && mode.equals("map2")){
                 y -= 16*3;
                 gridY -=1;
                 if(selectedUnit!=null){
                     path(oldX, oldY, gridX, gridY, selectedUnit);
                 }
             }
-            if(keys[KeyEvent.VK_DOWN] && (gridY+1)!=10 && mode == "map1" || keys[KeyEvent.VK_DOWN] && (gridY+1)!=10 && mode == "map2"){
+            if(keys[KeyEvent.VK_DOWN] && (gridY+1)!=10 && mode.equals("map1") || keys[KeyEvent.VK_DOWN] && (gridY+1)!=10 && mode.equals("map2")){
                 y += 16*3;
                 gridY +=1;
                 if(selectedUnit!=null){
@@ -1305,16 +1267,16 @@ class GamePanel extends JPanel implements KeyListener{
 
         //Point mouse = MouseInfo.getPointerInfo().getLocation();
         //Point offset = getLocationOnScreen();
-        //System.out.println("("+(mouse.x-offset.x)+", "+(mouse.y-offset.y)+")");
+        //if(DEBUG) System.out.println("("+(mouse.x-offset.x)+", "+(mouse.y-offset.y)+")");
     }
 
     public void showMap(int [][] map){
-        System.out.println("***************");
+        if(DEBUG) System.out.println("***************");
         for(int i=0; i<10; i++){
             for(int j=0; j<15; j++){
                 System.out.print(map[i][j]);
             }
-            System.out.println("");
+            if(DEBUG) System.out.println("");
         }
     }
 
@@ -1358,7 +1320,7 @@ class GamePanel extends JPanel implements KeyListener{
         int limit = unit.getStats()[8]-1;
         if(srtx == endx && srty == endy){
             if(count<=mincount){
-                //System.out.println("hit");
+                //if(DEBUG) System.out.println("hit");
                 //int [][] newmap = emptymap();
                 mincount = count;
                 pathmap = stringtomap(xpath, ypath);
@@ -1467,9 +1429,9 @@ class GamePanel extends JPanel implements KeyListener{
     public void enemyMove(int srtx, int srty, int endx, int endy, String xpath, String ypath, String dirs, int count, Unit eUnit, Unit pUnit){
         int limit = eUnit.getStats()[8]-1;
         if(Point2D.distance(srtx, srty, endx, endy) == 1 || count == limit+1 && Point2D.distance(srtx, srty, endx, endy)<=mindist){
-            //System.out.println("hit enemy "+count+" "+limit);
+            //if(DEBUG) System.out.println("hit enemy "+count+" "+limit);
             if(Point2D.distance(srtx, srty, endx, endy) == 1){ //checks if it can attack a unit
-                System.out.println(eUnit.getName()+" attacked "+pUnit.getName());
+                if(DEBUG) System.out.println(eUnit.getName()+" attacked "+pUnit.getName());
 
                 battle(eUnit, pUnit);
             }
@@ -1515,16 +1477,6 @@ class GamePanel extends JPanel implements KeyListener{
         }
     }
 
-
-
-
-
-
-
-
-
-
-
     public Unit playerUnitAtPoint(int x, int y){
         for(Unit unit : playerUnits){
             if(unit.getX() == x && unit.getY() == y){
@@ -1547,50 +1499,59 @@ class GamePanel extends JPanel implements KeyListener{
     private Font customFont;
 
    public void paintComponent(Graphics g){ //actually draws everything
-
-      Font newFont = g.getFont().deriveFont(40f);
+       Font newFont = null;
+       try {
+           newFont = Font.createFont(Font.TRUETYPE_FONT, new File("font\\GBA.ttf")).deriveFont(40f);
+       } catch (FontFormatException e) {
+           e.printStackTrace();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+       //Font newFont = g.getFont().deriveFont(40f);
       g.setFont(newFont);
       g.setColor(Color.white);
 
-      if(mode == "title"){
+      if(mode.equals("title")){
         titleImage = loadImage("images/Menu/Title.png");
         g.drawImage(titleImage,0,0,this);
-        g.drawString("Press 'A'", 55*3, 39*3);
+        //g.setFont(customFont2);
+        g.drawString("Press Enter", 95*3, 135*3);
       }
 
-      if(mode == "menu"){
+      if(mode.equals("menu")){
         menuImage = loadImage("images/Menu/Main Menu.png");
         g.drawImage(menuImage,0,0,this);
-        g.drawString("Chapter 1", 90*3, 58*3);
-        g.drawString("Chapter 2", 90*3, 83*3);
-        g.drawString("Tutorial", 97*3, 108*3);
-        g.drawString("Press 'Space' to select a button", 55*3, 39*3);
+        g.drawString("Chapter 1", 95*3, 58*3);
+        g.drawString("Chapter 2", 95*3, 83*3);
+        g.drawString("Tutorial", 99*3, 108*3);
+        g.drawString("Press 'Space' to select a button", 50*3, 25*3);
 
+        //menu buttons
         if(btnPos == 1){
           g.drawImage(btnSelectPics.get(btnCounter), 37*3, 43*3, this);
-          g.drawString("Chapter 1", 90*3, 58*3);
+          g.drawString("Chapter 1", 95*3, 58*3);
         }
         else if(btnPos == 2){
           g.drawImage(btnSelectPics.get(btnCounter), 37*3, 68*3, this);
-          g.drawString("Chapter 2", 90*3, 83*3);
+          g.drawString("Chapter 2", 95*3, 83*3);
         }
         else if(btnPos == 3){
           g.drawImage(btnSelectPics.get(btnCounter), 37*3, 93*3, this);
-          g.drawString("Tutorial", 97*3, 108*3);
+          g.drawString("Tutorial", 99*3, 108*3);
         }
       }
 
-      if(mode == "tutorial"){
+      if(mode.equals("tutorial")){
         tutorialImage = loadImage("images/Menu/Tutorial.png");
         g.drawImage(tutorialImage,0,0,this);
-      newFont = g.getFont().deriveFont(20f);
-      g.setFont(newFont);
-      g.setColor(Color.white);
-        g.drawString("Press 'Z' to move unit", 55*3, 39*3);
-        g.drawString("Press 'ESC' to go back to main menu", 10, 20);
+        newFont = g.getFont().deriveFont(30f);
+        g.setFont(newFont);
+        g.setColor(Color.white);
+        g.drawString("Press 'Z' to move unit", 55*3, 42*3);
+        g.drawString("Press 'ESC' to go back to main menu", 5*3, 10*3);
       }
 
-        if(mode == "map1" || mode == "map2"){
+        if(mode.equals("map1") || mode.equals("map2")){
         g.drawImage(map,0,0,this);
 
         for(int x=0; x<15; x++){ //draws path and possible path using given maps from the other methods
@@ -1690,7 +1651,7 @@ class GamePanel extends JPanel implements KeyListener{
             g.drawString("HP: "+Integer.toString(enemyUnitAtPoint(gridX, gridY).getCurHP()),60, 100);
         }
         if(playerUnits.isEmpty()){ //gameover
-            System.out.println("GameOver");
+            if(DEBUG) System.out.println("GameOver");
         }
         if(enemyUnits.isEmpty()){ //beating a level
             g.drawImage(victory,0,0,this);

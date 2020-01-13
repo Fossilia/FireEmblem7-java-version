@@ -1,12 +1,19 @@
+package com.fossilia.fire_emblem7.graphics;
+
 //import java.awt.*;
+import com.fossilia.fire_emblem7.Global;
+
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 //import java.awt.MouseInfo;
 //import java.util.*;
 import javax.swing.Timer;
+import javax.imageio.ImageIO;
 //import java.awt.geom.Point2D;
 
-public class FireEmblem extends JFrame implements ActionListener{
+
+public class FireEmblem extends JFrame implements ActionListener, Global {
     Timer myTimer;
     GamePanel game;
 

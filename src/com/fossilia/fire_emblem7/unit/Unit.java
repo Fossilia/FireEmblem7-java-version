@@ -1,9 +1,13 @@
+package com.fossilia.fire_emblem7.unit;
+
+import com.fossilia.fire_emblem7.Global;
+
 import java.util.*;
 import java.awt.geom.Point2D;
 import java.awt.*;
 import javax.swing.*;
 
-public class Unit{
+public class Unit implements Global {
     private final int GROUND = 0;
     private final int TREES = 1;
     private final int WATER = 2;
@@ -64,15 +68,15 @@ public class Unit{
     this.UnitClass = new UnitClass(classType);
 
     this.Weapon = new Weapon(wep);
-    System.out.println("Unit: " + name);
-    System.out.println("Weapon: " + wep);
+    if(DEBUG) System.out.println("Unit: " + name);
+    if(DEBUG) System.out.println("Weapon: " + wep);
     updateStats();
-    System.out.println("Attack: " + atk);
-    System.out.println("Attack Speed: " + atkspd);
-    System.out.println("Hit Rate: " + hitRate);
-    System.out.println("Critical Rate: " + crtRate);
-    System.out.println("Avoid: " + avo);
-    System.out.println("Description: " + Weapon.desc + "\n");
+    if(DEBUG) System.out.println("Attack: " + atk);
+    if(DEBUG) System.out.println("Attack Speed: " + atkspd);
+    if(DEBUG) System.out.println("Hit Rate: " + hitRate);
+    if(DEBUG) System.out.println("Critical Rate: " + crtRate);
+    if(DEBUG) System.out.println("Avoid: " + avo);
+    if(DEBUG) System.out.println("Description: " + Weapon.desc + "\n");
   }
 
   class UnitClass{
@@ -225,8 +229,8 @@ public class Unit{
       battleAtk = (atk+wepTri - enemy.stats[RES])*crt;
     }
 
-    System.out.println(name + "'s Hit Rate: " + battleHit + ", Crit Rate: " + battleCrt + ", Attack: " + (atk+wepTri) + ", WepTri: " + wepTri);
-    System.out.println(enemy.name + "'s HP: " + enemy.curHP + ", DEF: " + enemy.stats[DEF]);
+    if(DEBUG) System.out.println(name + "'s Hit Rate: " + battleHit + ", Crit Rate: " + battleCrt + ", Attack: " + (atk+wepTri) + ", WepTri: " + wepTri);
+    if(DEBUG) System.out.println(enemy.name + "'s HP: " + enemy.curHP + ", DEF: " + enemy.stats[DEF]);
 
     if(hit == true){
       if(enemy.curHP < battleAtk){
@@ -235,11 +239,11 @@ public class Unit{
       else{
         enemy.curHP -= battleAtk;
       }
-      System.out.println("Hit! " + name + " dealt " + battleAtk + " dmg to " + enemy.name);
-      System.out.println(enemy.name + "'s HP: " + enemy.curHP);
+      if(DEBUG) System.out.println("Hit! " + name + " dealt " + battleAtk + " dmg to " + enemy.name);
+      if(DEBUG) System.out.println(enemy.name + "'s HP: " + enemy.curHP);
     }
     else if(hit == false){
-      System.out.println("Missed! ");
+      if(DEBUG) System.out.println("Missed! ");
     }
   }
 
@@ -365,7 +369,7 @@ public class Unit{
           g.drawRect(x*16*3-9*3, y*16*3-16*3, 48, 48);
       }*/
       else if(!moving && selected){
-         //System.out.println("selected");
+         //if(DEBUG) System.out.println("selected");
           g.drawImage(selectedSprites.get(counter3) , x*16*3-9*3, y*16*3-16*3, selectedSprites.get(counter3).getWidth(null), selectedSprites.get(counter3).getHeight(null), null);
       }
       else{
