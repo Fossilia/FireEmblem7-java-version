@@ -11,4 +11,4 @@
   ![Overworld Screenshot](screenshots/overworld_screenshot.jpeg)
 
 ## Releases
-  Download from the [Release Page](https://github.com/Fossilia/FireEmblem7-java-version/releases)
+  Download from the [Release Page](https://github.com/Fossilia/FireEmblem7-java-version/releases).
