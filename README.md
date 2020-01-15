@@ -6,11 +6,11 @@
   All sprites were ripped from the original game.
 
 ## Screenshots
-  Battle screenshot:
+  Battle phase:
   
   ![Battle Screenshot](screenshots/battle_screenShot.jpeg)
   
-  Overworld screenshot:
+  Overworld:
   
   ![Overworld Screenshot](screenshots/overworld_screenshot.jpeg)
 
